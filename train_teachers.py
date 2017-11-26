@@ -1,18 +1,3 @@
-# Copyright 2016 The TensorFlow Authors. All Rights Reserved.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-# ==============================================================================
-
 
 from __future__ import absolute_import
 from __future__ import division
@@ -21,12 +6,14 @@ from __future__ import print_function
 import tensorflow as tf
 
 from differential_privacy.multiple_teachers import deep_cnn
-from differential_privacy.multiple_teachers import input
-from differential_privacy.multiple_teachers import metrics
+from DP_CNN import input
+from DP_CNN import metrics
+from DP_CNN import train_CNN
 
 
-tf.flags.DEFINE_string('dataset', 'svhn', 'The name  of the dataset to use')
-tf.flags.DEFINE_integer('nb_labels', 10, 'Number of output classes')
+""
+#tf.flags.DEFINE_string('dataset', 'svhn', 'The name  of the dataset to use')
+#tf.flags.DEFINE_integer('nb_labels', 10, 'Number of output classes')
 
 tf.flags.DEFINE_string('data_dir','/tmp','Temporary storage')
 tf.flags.DEFINE_string('train_dir','/tmp/train_dir',
@@ -51,19 +38,12 @@ def train_teacher(dataset, nb_teachers, teacher_id):
   :return: True if everything went well
   """
   # If working directories do not exist, create them
-  assert input.create_dir_if_needed(FLAGS.data_dir)
-  assert input.create_dir_if_needed(FLAGS.train_dir)
+ 
 
   # Load the dataset
-  if dataset == 'svhn':
-    train_data,train_labels,test_data,test_labels = input.ld_svhn(extended=True)
-  elif dataset == 'cifar10':
-    train_data, train_labels, test_data, test_labels = input.ld_cifar10()
-  elif dataset == 'mnist':
-    train_data, train_labels, test_data, test_labels = input.ld_mnist()
-  else:
-    print("Check value of dataset flag")
-    return False
+
+  train_data,train_labels,test_data,test_labels = train_CNN.load_pictures(load=False)
+  
 
   # Retrieve subset of data for this teacher
   data, labels = input.partition_dataset(train_data,

@@ -272,6 +272,8 @@ def training(model, X_train, X_test, y_train, y_test, data_augmentation=True):
     return model, history
 
 
+'''
+
 if __name__ == '__main__':
     X_train, X_test, y_train, y_test = get_dataset(load=False)
     model, opt = create_six_conv_layer(X_train.shape[1:])
@@ -332,6 +334,7 @@ if __name__ == '__main__':
 
                 
 	
+'''
 
 
 

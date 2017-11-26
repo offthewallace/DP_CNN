@@ -60,17 +60,16 @@ def train_teacher(dataset, nb_teachers, teacher_id):
     filename = str(nb_teachers) + '_teachers_' + str(teacher_id) + '.ckpt'
   ckpt_path = FLAGS.train_dir + '/' + str(dataset) + '_' + filename
 
-  # Perform teacher training
+  # Perform teacher training need to modify 
   assert deep_cnn.train(data, labels, ckpt_path)
 
-  # Append final step value to checkpoint for evaluation
+
   ckpt_path_final = ckpt_path + '-' + str(FLAGS.max_steps - 1)
 
-  # Retrieve teacher probability estimates on the test data
+#change to my own code
   teacher_preds = deep_cnn.softmax_preds(test_data, ckpt_path_final)
 
-  # Compute teacher accuracy
-  precision = metrics.accuracy(teacher_preds, test_labels)
+#change the prediction function  precision = metrics.accuracy(teacher_preds, test_labels)
   print('Precision of teacher after training: ' + str(precision))
 
   return True

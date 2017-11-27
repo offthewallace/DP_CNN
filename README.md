@@ -9,6 +9,14 @@ metrics.py: used for calculating the accuracy of label predictions.
 
 train_CNN.py: the main CNN program includes the fuction of getting data, create the training model and the training CNN process.
 
+train_teacher.py: it is the part for training the divide teacher models, I am currently working on this one.
+
+aggregation.py : TODO.
+
+training_student.py: TODO
+
+Analysis: TODO
+
 TODO: train_CNN modified the model  part  and finsih that py file 11.27
 
 11.29 finish the aggragation part into Keras

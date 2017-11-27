@@ -10,11 +10,7 @@ from DP_CNN import input
 from DP_CNN import metrics
 from DP_CNN import train_CNN
 
-
-""
-#tf.flags.DEFINE_string('dataset', 'svhn', 'The name  of the dataset to use')
-#tf.flags.DEFINE_integer('nb_labels', 10, 'Number of output classes')
-
+"""
 tf.flags.DEFINE_string('data_dir','/tmp','Temporary storage')
 tf.flags.DEFINE_string('train_dir','/tmp/train_dir',
                        'Where model ckpt are saved')
@@ -26,7 +22,7 @@ tf.flags.DEFINE_integer('teacher_id', 0, 'ID of teacher being trained.')
 tf.flags.DEFINE_boolean('deeper', False, 'Activate deeper CNN model')
 
 FLAGS = tf.flags.FLAGS
-
+"""
 
 def train_teacher(dataset, nb_teachers, teacher_id):
   """
@@ -61,7 +57,7 @@ def train_teacher(dataset, nb_teachers, teacher_id):
   ckpt_path = FLAGS.train_dir + '/' + str(dataset) + '_' + filename
 
   # Perform teacher training need to modify 
-  assert deep_cnn.train(data, labels, ckpt_path)
+ #modify  assert deep_cnn.train(data, labels, ckpt_path)
 
 
   ckpt_path_final = ckpt_path + '-' + str(FLAGS.max_steps - 1)
@@ -77,7 +73,7 @@ def train_teacher(dataset, nb_teachers, teacher_id):
 
 def main(argv=None):  # pylint: disable=unused-argument
   # Make a call to train_teachers with values specified in flags
-  assert train_teacher(FLAGS.dataset, FLAGS.nb_teachers, FLAGS.teacher_id)
+ # assert train_teacher(FLAGS.dataset, FLAGS.nb_teachers, FLAGS.teacher_id)
 
 if __name__ == '__main__':
   tf.app.run()

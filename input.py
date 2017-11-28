@@ -3,16 +3,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import cPickle
-import gzip
-import math
-import numpy as np
-import os
-from scipy.io import loadmat as loadmat
-from six.moves import urllib
-import sys
-import tarfile
-
 
 def partition_dataset(data, labels, nb_teachers, teacher_id):
   """

@@ -1,24 +1,66 @@
 # DP_CNN
-Differential privacy  application of CNN in Computer Vision
 
-This project is for CS395 end term project.
+## 1.Final Project Outline
 
-Input.py: it used for partition_dataset for dividing the data set with the number of teachers.
+  The Final project will implement the Private Aggregation of Teacher Ensembles (PATE) by using custom datasets and training CNN model.
 
-metrics.py: used for calculating the accuracy of label predictions.
+  Based on the given code from the paper, the project will be implemented based on  Keras backend instead of the Tensorflow as backend by the given paper. Also Keras is the machine learning backend used by custom CNN model. 
 
-train_CNN.py: the main CNN program includes the fuction of getting data, create the training model and the training CNN process.
+  After implement custom training model and revised the source code, the new student model will be tested by the custom training datasets and comparing with the original training model based on the trade off between the accuracy and the privacy.
+  
+  
+## 2.Final Project Outline
+  
+  In the sample codes file it has 8 files.
 
-train_teacher.py: it is the part for training the divide teacher models, I am currently working on this one.
+  Aggregation.py
 
-aggregation.py : TODO.
 
-training_student.py: TODO
+  Analysis.py
 
-Analysis: TODO
 
-TODO: train_CNN modified the model  part  and finsih that py file 11.27
+  Deep-Cnn.py
 
-11.29 finish the aggragation part into Keras
 
-11.30 finish the student file and test for running the program. 
+  Input.py
+
+
+  Metrics.py
+
+  Train-students.py
+
+  Train-teachers.py
+
+  Utils.py
+
+  The introduction of each files and functionn from the source code} The source code can be find in the attached link inside of email
+
+
+  1.Input.py: It is the file for simple import the mnist or extract the Cifar10 files as input, so I dont think I will keep this file for my research project since I already had my input function in my own CNN file.
+
+
+  2.Utils.py: this file  has one function for computes a batch start and end index. 
+
+
+  3.Aggregation.py: used for aggregating the different teachers models’ vote into one result while applying the laplace noise into those votes for the function “noisymax”. Another function inside of Aggreation.py would be “aggregation-most-frequent”, it’s kind of like the “Above Threshold” but only return the highest  “vote of label”  during the training for student model.
+
+
+  4.DeepCnn.py： Neural network file
+
+
+  5.Metrices.py: calculate the accuracy of the array of logits (or label predictions) with the labels. 
+
+
+  6.Trainteachers.py: Function  “train-teacher”: It would train the teacher model based on the number of teachers and give each teacher model a number. The data set would be partite into # of Teachers parts.
+
+
+  7.Trainstudents.py: It has three functions. Ensemblepreds: it would return teachers’ model predict results based on the the student’s input, which know as the “public data”.  Basic machine learning predict step.
+
+
+  8.Prepare-student-data: it would use the functions in “Aggregation.py” to apply the result returned after “Ensemble-preds” to create the privacy result for training the student model
+
+
+  9.Train-student.py： basic machine learning training for student model by the private data applied DP by Prepare-student-data
+
+
+

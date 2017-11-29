@@ -63,4 +63,10 @@
   9.Train-student.py： basic machine learning training for student model by the private data applied DP by Prepare-student-data
 
 
+## 3.implement details and change
+
+  1.Input.py: I delete most of the functions from the orginal file since I dont need to import the file from the internet like minist or CR10. I added the import functions inside of my training CNN files for import the datapath and parsing the images.
+Also I modified the partition-dataset to fit my process.
+
+
 

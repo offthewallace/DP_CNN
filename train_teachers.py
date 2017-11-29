@@ -3,28 +3,15 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import tensorflow as tf
-
+import glob
 from differential_privacy.multiple_teachers import deep_cnn
 from DP_CNN import input
 from DP_CNN import metrics
 from DP_CNN import train_CNN
 
-"""
-tf.flags.DEFINE_string('data_dir','/tmp','Temporary storage')
-tf.flags.DEFINE_string('train_dir','/tmp/train_dir',
-                       'Where model ckpt are saved')
-
-tf.flags.DEFINE_integer('max_steps', 3000, 'Number of training steps to run.')
-tf.flags.DEFINE_integer('nb_teachers', 50, 'Teachers in the ensemble.')
-tf.flags.DEFINE_integer('teacher_id', 0, 'ID of teacher being trained.')
-
-tf.flags.DEFINE_boolean('deeper', False, 'Activate deeper CNN model')
-
-FLAGS = tf.flags.FLAGS
-"""
 
 def train_teacher(dataset, nb_teachers, teacher_id):
+
   """
   This function trains a teacher (teacher id) among an ensemble of nb_teachers
   models for the dataset specified.
@@ -33,8 +20,6 @@ def train_teacher(dataset, nb_teachers, teacher_id):
   :param teacher_id: id of the teacher being trained
   :return: True if everything went well
   """
-  # If working directories do not exist, create them
- 
 
   # Load the dataset
 
@@ -50,19 +35,24 @@ def train_teacher(dataset, nb_teachers, teacher_id):
   print("Length of training data: " + str(len(labels)))
 
   # Define teacher checkpoint filename and full path
-  if FLAGS.deeper:
-    filename = str(nb_teachers) + '_teachers_' + str(teacher_id) + '_deep.ckpt'
-  else:
-    filename = str(nb_teachers) + '_teachers_' + str(teacher_id) + '.ckpt'
-  ckpt_path = FLAGS.train_dir + '/' + str(dataset) + '_' + filename
+
+  filename = str(nb_teachers) + '_teachers_' + str(teacher_id) + '.ckpt'
+
+  #train directory from the load picture
+  ckpt_path = train_dir + '/' + str(dataset) + '_' + filename
 
   # Perform teacher training need to modify 
- #modify  assert deep_cnn.train(data, labels, ckpt_path)
+  #modify  assert deep_cnn.train(data, labels, ckpt_path)
+  model, opt = create_six_conv_layer(X_train.shape[1:])
+    model.compile(loss='categorical_crossentropy',
+              optimizer=opt,
+              metrics=['accuracy'])
+    model, hist = training(model, X_train, X_test, y_train, y_test, data_augmentation=True)
 
-
+  #modify
   ckpt_path_final = ckpt_path + '-' + str(FLAGS.max_steps - 1)
 
-#change to my own code
+  #change to my own code
   teacher_preds = deep_cnn.softmax_preds(test_data, ckpt_path_final)
 
 #change the prediction function  precision = metrics.accuracy(teacher_preds, test_labels)

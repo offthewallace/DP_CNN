@@ -11,7 +11,7 @@
   
 ## 2.Final Project Outline
   
-  In the sample codes file it has 8 files.
+  In the sample codes file it has 8 files. The source code files can be found in here   https://github.com/tensorflow/models/tree/master/research/differential_privacy/multiple_teachers
 
   Aggregation.py
 
@@ -33,7 +33,7 @@
 
   Utils.py
 
-  The introduction of each files and functionn from the source code} The source code can be find in the attached link inside of email
+  The introduction of each files and functionn from the source code
 
 
   1.Input.py: It is the file for simple import the mnist or extract the Cifar10 files as input, so I dont think I will keep this file for my research project since I already had my input function in my own CNN file.

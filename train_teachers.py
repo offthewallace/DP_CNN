@@ -4,13 +4,15 @@ from __future__ import division
 from __future__ import print_function
 
 import glob
+import keras
+
 from differential_privacy.multiple_teachers import deep_cnn
 from DP_CNN import input
 from DP_CNN import metrics
 from DP_CNN import train_CNN
 
 
-def train_teacher(dataset, nb_teachers, teacher_id):
+def train_teacher(nb_teachers, teacher_id):
 
   """
   This function trains a teacher (teacher id) among an ensemble of nb_teachers

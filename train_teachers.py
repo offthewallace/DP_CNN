@@ -44,9 +44,17 @@ def train_teacher(nb_teachers, teacher_id):
   
 
   # Perform teacher training need to modify 
+<<<<<<< HEAD
   # Create teacher model
   model, opt = create_six_conv_layer(X_train.shape[1:])
   model.compile(loss='categorical_crossentropy',
+=======
+  #modify  assert deep_cnn.train(data, labels, ckpt_path)
+
+   for i in xrange(nb_teachers):
+    model, opt = create_six_conv_layer(X_train.shape[1:])
+    model.compile(loss='categorical_crossentropy',
+>>>>>>> edbfe63611865b1996bddd663c54139d1bfed94b
               optimizer=opt,
               metrics=['accuracy'])
     model, hist = training(model, X_train, X_test, y_train, y_test, data_augmentation=True,filename)

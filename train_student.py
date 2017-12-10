@@ -25,7 +25,7 @@ from differential_privacy.multiple_teachers import aggregation
 from differential_privacy.multiple_teachers import deep_cnn
 from differential_privacy.multiple_teachers import input
 from differential_privacy.multiple_teachers import metrics
-
+"""
 FLAGS = tf.flags.FLAGS
 
 tf.flags.DEFINE_string('dataset', 'svhn', 'The name of the dataset to use')
@@ -47,9 +47,9 @@ tf.flags.DEFINE_integer('lap_scale', 10,
 tf.flags.DEFINE_boolean('save_labels', False,
                         'Dump numpy arrays of labels and clean teacher votes')
 tf.flags.DEFINE_boolean('deeper', False, 'Activate deeper CNN model')
+"""
 
-
-def ensemble_preds(dataset, nb_teachers, stdnt_data):
+def ensemble_preds(nb_teachers, stdnt_data):
   """
   Given a dataset, a number of teachers, and some input data, this helper
   function queries each teacher for predictions on the data and returns
@@ -64,27 +64,32 @@ def ensemble_preds(dataset, nb_teachers, stdnt_data):
 
   # Compute shape of array that will hold probabilities produced by each
   # teacher, for each training point, and each output class
-  result_shape = (nb_teachers, len(stdnt_data), FLAGS.nb_labels)
+  result_shape = (nb_teachers, len(stdnt_data), 2)
 
   # Create array that will hold result
   result = np.zeros(result_shape, dtype=np.float32)
 
   # Get predictions from each teacher
-  for teacher_id in xrange(nb_teachers):
-    # Compute path of checkpoint file for teacher model with ID teacher_id
-    
-      ckpt_path = FLAGS.teachers_dir + '/' + str(dataset) + '_' + str(nb_teachers) + '_teachers_' + str(teacher_id) + '.ckpt-' + str(FLAGS.teachers_max_steps - 1)  # NOLINT(long-line)
 
+  #save model to json and reload https://machinelearningmastery.com/save-load-keras-deep-learning-models/
+  for teacher_id in xrange(nb_teachers):
+    # Compute path of weight file for teacher model with ID teacher_id
+      filename = str(nb_teachers) + '_teachers_' + str(teacher_id) + '.hdf5'
+      model, opt = create_six_conv_layer(dataset.shape[1:])
+      model.compile(loss='categorical_crossentropy',
+              optimizer=opt,
+              metrics=['accuracy'])
+      model.load_weights(filename, by_name=False)
     # Get predictions on our training data and store in result array
-    result[teacher_id] = deep_cnn.softmax_preds(stdnt_data, ckpt_path)
+    result[teacher_id] = model.redict_proba(stdnt_data)
 
     # This can take a while when there are a lot of teachers so output status
-    print("Computed Teacher " + str(teacher_id) + " softmax predictions")
+    print("Computed Teacher " + str(teacher_id) + "predictions")
 
   return result
 
 
-def prepare_student_data(dataset, nb_teachers, save=False):
+def prepare_student_data(test_data, nb_teachers, save=False,lap_scale):
   """
   Takes a dataset name and the size of the teacher ensemble and prepares
   training data for the student model, according to parameters indicated
@@ -99,38 +104,28 @@ def prepare_student_data(dataset, nb_teachers, save=False):
   """
   assert input.create_dir_if_needed(FLAGS.train_dir)
 
-  # Load the dataset
-  if dataset == 'svhn':
-    test_data, test_labels = input.ld_svhn(test_only=True)
-  elif dataset == 'cifar10':
-    test_data, test_labels = input.ld_cifar10(test_only=True)
-  elif dataset == 'mnist':
-    test_data, test_labels = input.ld_mnist(test_only=True)
-  else:
-    print("Check value of dataset flag")
-    return False
+ 
 
   # Make sure there is data leftover to be used as a test set
-  assert FLAGS.stdnt_share < len(test_data)
 
   # Prepare [unlabeled] student training data (subset of test set)
-  stdnt_data = test_data[:FLAGS.stdnt_share]
+  stdnt_data = test_data[:stdnt_share]
 
   # Compute teacher predictions for student training data
-  teachers_preds = ensemble_preds(dataset, nb_teachers, stdnt_data)
+  teachers_preds = ensemble_preds(nb_teachers, stdnt_data)
 
   # Aggregate teacher predictions to get student training labels
   if not save:
-    stdnt_labels = aggregation.noisy_max(teachers_preds, FLAGS.lap_scale)
+    stdnt_labels = aggregation.noisy_max(teachers_preds,lap_scale)
   else:
     # Request clean votes and clean labels as well
-    stdnt_labels, clean_votes, labels_for_dump = aggregation.noisy_max(teachers_preds, FLAGS.lap_scale, return_clean_votes=True) #NOLINT(long-line)
+    stdnt_labels, clean_votes, labels_for_dump = aggregation.noisy_max(teachers_preds, lap_scale, return_clean_votes=True) #NOLINT(long-line)
 
     # Prepare filepath for numpy dump of clean votes
-    filepath = FLAGS.data_dir + "/" + str(dataset) + '_' + str(nb_teachers) + '_student_clean_votes_lap_' + str(FLAGS.lap_scale) + '.npy'  # NOLINT(long-line)
+    filepath = '_teachers_'+ str(nb_teachers) + '_student_clean_votes_lap_' + str(lap_scale) + '.npy'  # NOLINT(long-line)
 
     # Prepare filepath for numpy dump of clean labels
-    filepath_labels = FLAGS.data_dir + "/" + str(dataset) + '_' + str(nb_teachers) + '_teachers_labels_lap_' + str(FLAGS.lap_scale) + '.npy'  # NOLINT(long-line)
+    filepath_labels = '_teachers_' + str(nb_teachers) + '_teachers_labels_lap_' + str(lap_scale) + '.npy'  # NOLINT(long-line)
 
     # Dump clean_votes array
     with tf.gfile.Open(filepath, mode='w') as file_obj:
@@ -145,9 +140,10 @@ def prepare_student_data(dataset, nb_teachers, save=False):
   print("Accuracy of the aggregated labels: " + str(ac_ag_labels))
 
   # Store unused part of test set for use as a test set after student training
-  stdnt_test_data = test_data[FLAGS.stdnt_share:]
-  stdnt_test_labels = test_labels[FLAGS.stdnt_share:]
+  stdnt_test_data = test_data[stdnt_share:]
+  stdnt_test_labels = test_labels[Fstdnt_share:]
 
+'''
   if save:
     # Prepare filepath for numpy dump of labels produced by noisy aggregation
     filepath = FLAGS.data_dir + "/" + str(dataset) + '_' + str(nb_teachers) + '_student_labels_lap_' + str(FLAGS.lap_scale) + '.npy' #NOLINT(long-line)
@@ -155,7 +151,7 @@ def prepare_student_data(dataset, nb_teachers, save=False):
     # Dump student noisy labels array
     with tf.gfile.Open(filepath, mode='w') as file_obj:
       np.save(file_obj, stdnt_labels)
-
+'''
   return stdnt_data, stdnt_labels, stdnt_test_data, stdnt_test_labels
 
 

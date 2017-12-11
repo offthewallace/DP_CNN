@@ -1,6 +1,6 @@
 # DP_CNN
 
-## 1.Final Project Outline
+## 1.Model Description 
 
   The Final project will implement the Private Aggregation of Teacher Ensembles (PATE) by using custom datasets and training CNN model.
 

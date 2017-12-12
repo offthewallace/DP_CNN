@@ -5,35 +5,12 @@ from __future__ import division
 from __future__ import print_function
 
 import numpy as np
-import tensorflow as tf
+import keras
 
-from differential_privacy.multiple_teachers import aggregation
-from differential_privacy.multiple_teachers import deep_cnn
-from differential_privacy.multiple_teachers import input
-from differential_privacy.multiple_teachers import metrics
-"""
-FLAGS = tf.flags.FLAGS
+from DP_CNN import aggregation
+from DP_CNN import partition
+from DP_CNN import train_CNN
 
-tf.flags.DEFINE_string('dataset', 'svhn', 'The name of the dataset to use')
-tf.flags.DEFINE_integer('nb_labels', 10, 'Number of output classes')
-
-tf.flags.DEFINE_string('data_dir','/tmp','Temporary storage')
-tf.flags.DEFINE_string('train_dir','/tmp/train_dir','Where model chkpt are saved')
-tf.flags.DEFINE_string('teachers_dir','/tmp/train_dir',
-                       'Directory where teachers checkpoints are stored.')
-
-tf.flags.DEFINE_integer('teachers_max_steps', 3000,
-                        'Number of steps teachers were ran.')
-tf.flags.DEFINE_integer('max_steps', 3000, 'Number of steps to run student.')
-tf.flags.DEFINE_integer('nb_teachers', 10, 'Teachers in the ensemble.')
-tf.flags.DEFINE_integer('stdnt_share', 1000,
-                        'Student share (last index) of the test data')
-tf.flags.DEFINE_integer('lap_scale', 10,
-                        'Scale of the Laplacian noise added for privacy')
-tf.flags.DEFINE_boolean('save_labels', False,
-                        'Dump numpy arrays of labels and clean teacher votes')
-tf.flags.DEFINE_boolean('deeper', False, 'Activate deeper CNN model')
-"""
 
 def ensemble_preds(nb_teachers, stdnt_data):
   """
@@ -75,7 +52,7 @@ def ensemble_preds(nb_teachers, stdnt_data):
   return result
 
 
-def prepare_student_data(test_data, nb_teachers, save=False,lap_scale):
+def prepare_student_data(test_data,nb_teachers, save=False,lap_scale,stdnt_share):
   """
   Takes a dataset name and the size of the teacher ensemble and prepares
   training data for the student model, according to parameters indicated
@@ -88,10 +65,7 @@ def prepare_student_data(test_data, nb_teachers, save=False,lap_scale):
                the labels assigned by teachers
   :return: pairs of (data, labels) to be used for student training and testing
   """
-  assert input.create_dir_if_needed(FLAGS.train_dir)
-
  
-
   # Make sure there is data leftover to be used as a test set
 
   # Prepare [unlabeled] student training data (subset of test set)
@@ -101,25 +75,8 @@ def prepare_student_data(test_data, nb_teachers, save=False,lap_scale):
   teachers_preds = ensemble_preds(nb_teachers, stdnt_data)
 
   # Aggregate teacher predictions to get student training labels
-  if not save:
     stdnt_labels = aggregation.noisy_max(teachers_preds,lap_scale)
-  else:
-    # Request clean votes and clean labels as well
-    stdnt_labels, clean_votes, labels_for_dump = aggregation.noisy_max(teachers_preds, lap_scale, return_clean_votes=True) #NOLINT(long-line)
-
-    # Prepare filepath for numpy dump of clean votes
-    filepath = '_teachers_'+ str(nb_teachers) + '_student_clean_votes_lap_' + str(lap_scale) + '.npy'  # NOLINT(long-line)
-
-    # Prepare filepath for numpy dump of clean labels
-    filepath_labels = '_teachers_' + str(nb_teachers) + '_teachers_labels_lap_' + str(lap_scale) + '.npy'  # NOLINT(long-line)
-
-    # Dump clean_votes array
-    with tf.gfile.Open(filepath, mode='w') as file_obj:
-      np.save(file_obj, clean_votes)
-
-    # Dump labels_for_dump array
-    with tf.gfile.Open(filepath_labels, mode='w') as file_obj:
-      np.save(file_obj, labels_for_dump)
+   
 
   # Print accuracy of aggregated labels
   ac_ag_labels = metrics.accuracy(stdnt_labels, test_labels[:FLAGS.stdnt_share])
@@ -146,40 +103,30 @@ def train_student(dataset, nb_teachers):
   This function trains a student using predictions made by an ensemble of
   teachers. The student and teacher models are trained using the same
   neural network architecture.
-  :param dataset: string corresponding to mnist, cifar10, or svhn
+  :param dataset: string corresponding to import data
   :param nb_teachers: number of teachers (in the ensemble) to learn from
   :return: True if student training went well
   """
-  assert input.create_dir_if_needed(FLAGS.train_dir)
-
   # Call helper function to prepare student data using teacher predictions
-  stdnt_dataset = prepare_student_data(dataset, nb_teachers, save=True)
+  stdnt_dataset = prepare_student_data(dataset, nb_teachers, save=True,stdnt_share)
 
   # Unpack the student dataset
   stdnt_data, stdnt_labels, stdnt_test_data, stdnt_test_labels = stdnt_dataset
 
-  # Prepare checkpoint filename and path
   
-  ckpt_path = FLAGS.train_dir + '/' + str(dataset) + '_' + str(nb_teachers) + '_student.ckpt'  # NOLINT(long-line)
+    filename = + 'student.hdf5'
 
   # Start student training
-  assert deep_cnn.train(stdnt_data, stdnt_labels, ckpt_path)
-
+	model, opt = create_six_conv_layer(stdnt_data.shape[1:])
+  model.compile(loss='categorical_crossentropy',
+              optimizer=opt,
+              metrics=['accuracy'])
+  model, hist = training(model, stdnt_data, stdnt_test_data, stdnt_labels, stdnt_test_labels, data_augmentation=True,filename)
+  #modify
   # Compute final checkpoint name for student (with max number of steps)
-  ckpt_path_final = ckpt_path + '-' + str(FLAGS.max_steps - 1)
+  model.save_weights('student.h5')
 
-  # Compute student label predictions on remaining chunk of test set
-  student_preds = deep_cnn.softmax_preds(stdnt_test_data, ckpt_path_final)
-
-  # Compute teacher accuracy
-  precision = metrics.accuracy(student_preds, stdnt_test_labels)
-  print('Precision of student after training: ' + str(precision))
 
   return True
 
-def main(argv=None): # pylint: disable=unused-argument
-  # Run student training according to values specified in flags
-  assert train_student(FLAGS.dataset, FLAGS.nb_teachers)
 
-if __name__ == '__main__':
-  tf.app.run()

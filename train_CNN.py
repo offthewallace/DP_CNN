@@ -42,7 +42,7 @@ test_size = 0.15
 
 
 
-def load_pictures(BGR):
+def load_pictures(BGR,dirc):
     """
     Load pictures from folders for characters from the map_characters dict and create a numpy dataset and 
     a numpy labels set. Pictures are re-sized into picture_size square.
@@ -52,7 +52,7 @@ def load_pictures(BGR):
     pics = []
     labels = []
     for k, char in map_characters.items():
-        pictures = [k for k in glob.glob('./data3/%s/*' % char)]
+        pictures = [k for k in glob.glob('./'+ dirc +'%s/*' % char)]
         #print(pictures)
         nb_pic = len(pictures)
         print(nb_pic)
@@ -66,7 +66,7 @@ def load_pictures(BGR):
             labels.append(k)
     return np.array(pics), np.array(labels) 
 
-def get_dataset(save=True, load=False, BGR=False):
+def get_dataset(save=True, load=False, BGR=False,dirc):
     """
     Create the actual dataset split into train and test, pictures content is as float32 and
     normalized (/255.) from cs231. 
@@ -86,7 +86,7 @@ def get_dataset(save=True, load=False, BGR=False):
         y_test = h5f['y_test'][:]
         h5f.close()    
     else:
-        X, y = load_pictures(BGR)
+        X, y = load_pictures(BGR, dirc)
         y = keras.utils.to_categorical(y, num_classes)
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size)
         #random splict the train/test set  

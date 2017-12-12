@@ -16,7 +16,7 @@ FOR DEEP LEARNING FROM PRIVATE TRAINING DATA can be found in here   https://gith
 
    The project has 6 files in total includes: trainTeachers.py, trainStudent.py, aggrgation.py, trainCNN.py, andpartition.py. The the flowchart of whole program is listed below.
    
- 
+ ![alt text](DP_CNN/Diagram.png)
  
  Description of flowchart
  

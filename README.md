@@ -38,7 +38,7 @@ FOR DEEP LEARNING FROM PRIVATE TRAINING DATA can be found in here   https://gith
    ![alt text](https://github.com/offthewallace/DP_CNN/blob/master/chart2.png)
 
  
- Step2: We will use each teacherModel model1...modeln and public data-sets A to prepare the
+ Step2:  We will use each teacherModel model1...modeln and public data-sets A to prepare the
 training data-sets for the student-model. For public data-sets A, we only take the A’s data part instead of label
 of A. Then each teacherModel model1...modeln will make a prediction for each
 samples of A-data. This process will return a 3d array with teacher model’s id, sample id, and probability per
@@ -49,7 +49,7 @@ prediction" inside of 3d array.
 
   ![alt text](https://github.com/offthewallace/DP_CNN/blob/master/Chart3.png)
 
-Step3. Use the student model data as input to train the student model. Then test student model’s accuracy
+  Step3:  Use the student model data as input to train the student model. Then test student model’s accuracy
 by public datasets B. Return student model.
 
  

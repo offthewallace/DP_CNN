@@ -23,7 +23,7 @@ def labels_from_probs(probs):
   return np.asarray(labels, dtype=np.int32)
 
 
-def noisy_max(logits, lap_scale, return_clean_votes=False):
+def noisy_max(logits, lap_scale):
   """
   This aggregation mechanism takes the softmax/logit output of several models
   resulting from inference on identical inputs and computes the noisy-max of
@@ -47,18 +47,10 @@ def noisy_max(logits, lap_scale, return_clean_votes=False):
   # Initialize array to hold final labels
   result = np.zeros(int(labels_shape[1]))
 
-  if return_clean_votes:
-    # Initialize array to hold clean votes for each sample
-    clean_votes = np.zeros((int(labels_shape[1]), 10))
-
   # Parse each sample
   for i in xrange(int(labels_shape[1])):
     # Count number of votes assigned to each class
     label_counts = np.bincount(labels[:, i], minlength=10)
-
-    if return_clean_votes:
-      # Store vote counts for export
-      clean_votes[i] = label_counts
 
     # Cast in float32 to prepare before addition of Laplacian noise
     label_counts = np.asarray(label_counts, dtype=np.float32)
@@ -72,14 +64,7 @@ def noisy_max(logits, lap_scale, return_clean_votes=False):
 
   # Cast labels to np.int32 for compatibility with deep_cnn.py feed dictionaries
   result = np.asarray(result, dtype=np.int32)
-
-  if return_clean_votes:
-    # Returns several array, which are later saved:
-    # result: labels obtained from the noisy aggregation
-    # clean_votes: the number of teacher votes assigned to each sample and class
-    # labels: the labels assigned by teachers (before the noisy aggregation)
-    return result, clean_votes, labels
-  else:
+  
     # Only return labels resulting from noisy aggregation
     return result
 

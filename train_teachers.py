@@ -7,7 +7,7 @@ import glob
 import keras
 
 from differential_privacy.multiple_teachers import deep_cnn
-from DP_CNN import input
+from DP_CNN import partition
 from DP_CNN import metrics
 from DP_CNN import train_CNN
 
@@ -21,10 +21,10 @@ def train_teacher(nb_teachers, teacher_id):
   :return: True if everything went well
   """
   # Load the dataset
-  train_data,train_labels,test_data,test_labels = train_CNN.load_pictures(load=False)
+  train_data,train_labels,test_data,test_labels = train_CNN.get_dataset(load=False)
   
   # Retrieve subset of data for this teacher
-  data, labels = input.partition_dataset(train_data,
+  data, labels = partition.partition_dataset(train_data,
                                          train_labels,
                                          nb_teachers,
                                          teacher_id)

@@ -32,7 +32,7 @@ from keras.models import load_model
 
 
 #input fo 
-map_characters ={0:'CarolinaChickadee' , 1:'EmptyFeeder',2:'EuropeanStarling',3:'GrayCatbird',4:'NorthernCardinal',5:'RedBelliedWoodpecker',6:'TuftedTitmouse',7:'YellowRumpedWarbler'}
+map_characters ={0:'birds' , 1:'nobirds'}
 
 pic_size = 140
 batch_size = 32
@@ -226,7 +226,7 @@ def VGG19(input_shape):
 
 
 
-def training(model, X_train, X_test, y_train, y_test, data_augmentation=True):
+def training(model, X_train, X_test, y_train, y_test, data_augmentation=True,ckpt_path):
     """
     Training.
     :param model: Keras sequential model

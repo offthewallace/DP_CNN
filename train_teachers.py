@@ -45,29 +45,26 @@ def train_teacher(nb_teachers, teacher_id):
 
   # Perform teacher training need to modify 
   #modify  assert deep_cnn.train(data, labels, ckpt_path)
-
-   for i in xrange(nb_teachers):
+#store part.
     model, opt = create_six_conv_layer(X_train.shape[1:])
     model.compile(loss='categorical_crossentropy',
               optimizer=opt,
               metrics=['accuracy'])
-    model, hist = training(model, X_train, X_test, y_train, y_test, data_augmentation=True)
+    model, hist = training(model, data, test_data, data, test_labels, data_augmentation=True)
 
   #modify
   ckpt_path_final = ckpt_path + '-' + str(FLAGS.max_steps - 1)
 
   #change to my own code
-  teacher_preds = deep_cnn.softmax_preds(test_data, ckpt_path_final)
+  teacher_preds = model.prediction()
 
 #change the prediction function  precision = metrics.accuracy(teacher_preds, test_labels)
+
   print('Precision of teacher after training: ' + str(precision))
 
   return True
 
 
-def main(argv=None):  # pylint: disable=unused-argument
-  # Make a call to train_teachers with values specified in flags
- # assert train_teacher(FLAGS.dataset, FLAGS.nb_teachers, FLAGS.teacher_id)
+def main(argv=None): 
 
 if __name__ == '__main__':
-  tf.app.run()

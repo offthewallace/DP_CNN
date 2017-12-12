@@ -177,10 +177,8 @@ def train_student(dataset, nb_teachers):
   stdnt_data, stdnt_labels, stdnt_test_data, stdnt_test_labels = stdnt_dataset
 
   # Prepare checkpoint filename and path
-  if FLAGS.deeper:
-    ckpt_path = FLAGS.train_dir + '/' + str(dataset) + '_' + str(nb_teachers) + '_student_deeper.ckpt' #NOLINT(long-line)
-  else:
-    ckpt_path = FLAGS.train_dir + '/' + str(dataset) + '_' + str(nb_teachers) + '_student.ckpt'  # NOLINT(long-line)
+  
+  ckpt_path = FLAGS.train_dir + '/' + str(dataset) + '_' + str(nb_teachers) + '_student.ckpt'  # NOLINT(long-line)
 
   # Start student training
   assert deep_cnn.train(stdnt_data, stdnt_labels, ckpt_path)

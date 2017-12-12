@@ -19,7 +19,6 @@ def ensemble_preds(nb_teachers, stdnt_data):
   all predictions in a single array. (That can then be aggregated into
   one single prediction per input using aggregation.py (cf. function
   prepare_student_data() below)
-  :param dataset: string corresponding to mnist, cifar10, or svhn
   :param nb_teachers: number of teachers (in the ensemble) to learn from
   :param stdnt_data: unlabeled student training data
   :return: 3d array (teacher id, sample id, probability per class)
@@ -38,7 +37,7 @@ def ensemble_preds(nb_teachers, stdnt_data):
   for teacher_id in xrange(nb_teachers):
     # Compute path of weight file for teacher model with ID teacher_id
       filename = str(nb_teachers) + '_teachers_' + str(teacher_id) + '.hdf5'
-      model, opt = create_six_conv_layer(dataset.shape[1:])
+      model, opt = train_CNN.create_six_conv_layer(dataset.shape[1:])
       model.compile(loss='categorical_crossentropy',
               optimizer=opt,
               metrics=['accuracy'])
@@ -63,7 +62,8 @@ def prepare_student_data(test_data,nb_teachers, save=False,lap_scale,stdnt_share
                the ensemble of teachers (with Laplacian noise) as npy files.
                It also dumps the clean votes for each class (without noise) and
                the labels assigned by teachers
-               
+   
+   :Param: stdnt_share: unlabeled student training data decided by user in student dataset.
   :return: pairs of (data, labels) to be used for student training and testing
   """
  
@@ -77,11 +77,6 @@ def prepare_student_data(test_data,nb_teachers, save=False,lap_scale,stdnt_share
 
   # Aggregate teacher predictions to get student training labels
     stdnt_labels = aggregation.noisy_max(teachers_preds,lap_scale)
-   
-
-  # Print accuracy of aggregated labels
-  ac_ag_labels = metrics.accuracy(stdnt_labels, test_labels[:FLAGS.stdnt_share])
-  print("Accuracy of the aggregated labels: " + str(ac_ag_labels))
 
   # Store unused part of test set for use as a test set after student training
   stdnt_test_data = test_data[stdnt_share:]
@@ -109,7 +104,7 @@ def train_student(dataset, nb_teachers):
   :return: True if student training went well
   """
   # Call helper function to prepare student data using teacher predictions
-  stdnt_dataset = prepare_student_data(dataset, nb_teachers, save=True,stdnt_share)
+  stdnt_dataset = prepare_student_data(dataset, nb_teachers, save=True,400)
 
   # Unpack the student dataset
   stdnt_data, stdnt_labels, stdnt_test_data, stdnt_test_labels = stdnt_dataset

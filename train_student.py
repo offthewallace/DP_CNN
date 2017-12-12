@@ -63,6 +63,7 @@ def prepare_student_data(test_data,nb_teachers, save=False,lap_scale,stdnt_share
                the ensemble of teachers (with Laplacian noise) as npy files.
                It also dumps the clean votes for each class (without noise) and
                the labels assigned by teachers
+               
   :return: pairs of (data, labels) to be used for student training and testing
   """
  

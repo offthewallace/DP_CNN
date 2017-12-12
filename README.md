@@ -33,21 +33,21 @@ FOR DEEP LEARNING FROM PRIVATE TRAINING DATA can be found in here   https://gith
  Number of teacher-models n and teacher-model’s id i .
  
 
- Step1: We will train a single teacher model based on the given private data-sets. the Inside of train_teachers.py’s trainTeacher() function, import getDataset() function from the train_CNN.py to get the private databy given directory. Then use createSixConvLayer() function from same file to create the a empty modeli. Then use the partitionDataset() function from the partition.py to partition the p into n part disjoin datasets P nwith same length.  Then run trainTeacher() n timesto create teacher models: model1...modeln
+ Step1: We will train a single teacher model based on the given private data-sets. The inside of train_teachers.py’s trainTeacher() function, import getDataset() function from the train_CNN.py to get the private databy given directory. Then use createSixConvLayer() function from same file to create the a empty modeli. Then use the partitionDataset() function from the partition.py to partition the p into n part disjoin datasets P nwith same length.  Then run trainTeacher() n timesto create teacher models: model1...modeln
  
    ![alt text](https://github.com/offthewallace/DP_CNN/blob/master/chart2.png)
 
  
- Step2: Then we will use each teacherModel model1...modeln and public data-sets A to prepare the
+ Step2: We will use each teacherModel model1...modeln and public data-sets A to prepare the
 training data-sets for the student-model. For public data-sets A, we only take the A’s data part instead of label
-of A for creating the datasets. Then each teacherModel model1...modeln will make a prediction of each
+of A. Then each teacherModel model1...modeln will make a prediction for each
 samples of A-data. This process will return a 3d array with teacher model’s id, sample id, and probability per
-class.(ensemblePreds() fuction from train_Student.py) Then we will apply the laplace noise into probability of
-3d array by the function noisymax in Aggregation.py. Then used the fuction aggregation-most-frequent()
+class. (ensemblePreds() fuction from train_Student.py)  Then we will apply the laplace noise into probability of
+3d array by the function noisymax in Aggregation.py. Later use the fuction aggregation-most-frequent()
 from Aggregation.py to get the label of A-data based on the "most frequent Vote/highest probability of
 prediction" inside of 3d array.
 
-  ![alt text](https://github.com/offthewallace/DP_CNN/blob/master/chart3.png)
+  ![alt text](https://github.com/offthewallace/DP_CNN/blob/master/Chart3.png)
 
 Step3. Use the student model data as input to train the student model. Then test student model’s accuracy
 by public datasets B. Return student model.

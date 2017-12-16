@@ -36,7 +36,7 @@ map_characters ={0:'birds' , 1:'nobirds'}
 
 pic_size = 140
 batch_size = 32
-epochs = 40
+epochs = 5
 num_classes = len(map_characters)
 test_size = 0.15
 

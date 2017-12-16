@@ -8,65 +8,64 @@
 
   After implement custom training model and revised the source code, the new student model will be tested by the custom training datasets and comparing with the original training model based on the trade off between the accuracy and the privacy.
   
+  The flowchart graph of Private Aggregation of Teacher Ensembles
+  ![alt text](https://github.com/offthewallace/DP_CNN/blob/master/pate-fig-1.jpeg)
   
-## 2.Final Project Outline
   
-  In the sample codes file it has 8 files. The source code files can be found in here   https://github.com/tensorflow/models/tree/master/research/differential_privacy/multiple_teachers
+## 2.Detail of Implementation
+  
+   The refernce code of  SEMI-SUPERVISED KNOWLEDGE TRANSFER
+FOR DEEP LEARNING FROM PRIVATE TRAINING DATA can be found in here   https://github.com/tensorflow/models/tree/master/research/differential_privacy/multiple_teachers
 
-  Aggregation.py
+   The project has 6 files in total includes: trainTeachers.py, trainStudent.py, aggrgation.py, trainCNN.py, andpartition.py. The the flowchart of whole program is listed below.
+   
+ ![alt text](https://github.com/offthewallace/DP_CNN/blob/master/Diagram.png)
+ 
+ Description of flowchart
+ 
+ Input of whole program:
+ private dataset: P for training teacher model
+ 
+ public dataset 1: A for training student model
+ 
+ public dataset 2: B for testing student model
+ 
+ Number of teacher-models n and teacher-model’s id i .
+ 
 
+ Step1: 
+ 
+ We will train a single teacher model based on the given private data-sets. The inside of train_teachers.py’s trainTeacher() function, import getDataset() function from the train_CNN.py to get the private databy given directory. Then use createSixConvLayer() function from same file to create the a empty modeli. Then use the partitionDataset() function from the partition.py to partition the p into n part disjoin datasets P nwith same length.  Then run trainTeacher() n timesto create teacher models: model1...modeln
+ 
+   ![alt text](https://github.com/offthewallace/DP_CNN/blob/master/chart2.png)
 
-  Analysis.py
+ 
+ Step2:
+ 
+ We will use each teacherModel model1...modeln and public data-sets A to prepare the
+training data-sets for the student-model. For public data-sets A, we only take the A’s data part instead of label
+of A. Then each teacherModel model1...modeln will make a prediction for each
+samples of A-data. This process will return a 3d array with teacher model’s id, sample id, and probability per
+class. (ensemblePreds() fuction from train_Student.py)  Then we will apply the laplace noise into probability of
+3d array by the function noisymax in Aggregation.py. Later use the fuction aggregation-most-frequent()
+from Aggregation.py to get the label of A-data based on the "most frequent Vote/highest probability of
+prediction" inside of 3d array.
 
+  ![alt text](https://github.com/offthewallace/DP_CNN/blob/master/Chart3.png)
 
-  Deep-Cnn.py
+  Step3:
+  
+  Use the student model data as input to train the student model. Then test student model’s accuracy
+by public datasets B. Return student model.
 
-
-  Input.py
-
-
-  Metrics.py
-
-  Train-students.py
-
-  Train-teachers.py
-
-  Utils.py
-
-  The introduction of each files and functionn from the source code
-
-
-  1.Input.py: It is the file for simple import the mnist or extract the Cifar10 files as input, so I dont think I will keep this file for my research project since I already had my input function in my own CNN file.
-
-
-  2.Utils.py: this file  has one function for computes a batch start and end index. 
-
-
-  3.Aggregation.py: used for aggregating the different teachers models’ vote into one result while applying the laplace noise into those votes for the function “noisymax”. Another function inside of Aggreation.py would be “aggregation-most-frequent”, it’s kind of like the “Above Threshold” but only return the highest  “vote of label”  during the training for student model.
-
-
-  4.DeepCnn.py： Neural network file
-
-
-  5.Metrices.py: calculate the accuracy of the array of logits (or label predictions) with the labels. 
-
-
-  6.Trainteachers.py: Function  “train-teacher”: It would train the teacher model based on the number of teachers and give each teacher model a number. The data set would be partite into # of Teachers parts.
-
-
-  7.Trainstudents.py: It has three functions. Ensemblepreds: it would return teachers’ model predict results based on the the student’s input, which know as the “public data”.  Basic machine learning predict step.
-
-
-  8.Prepare-student-data: it would use the functions in “Aggregation.py” to apply the result returned after “Ensemble-preds” to create the privacy result for training the student model
-
-
-  9.Train-student.py： basic machine learning training for student model by the private data applied DP by Prepare-student-data
-
-
+ 
 ## 3.implement details and change
 
-  1.Input.py: I delete most of the functions from the orginal file since I dont need to import the file from the internet like minist or CR10. I added the import functions inside of my training CNN files for import the datapath and parsing the images.
-Also I modified the partition-dataset to fit my process.
+  1.Delete most of the functions from the original import file since It is unnecessary to import minist or CR10. I added the import functions inside of training CNN files for import the data-path and parsing theimages.
+  
+  2.Modified the partition-dataset() function inside of partition.py to fit the given datas-ets.
+  
+  3.Modlify the aggregation.py to fit in Keras version
 
 
 

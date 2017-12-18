@@ -5,11 +5,14 @@ from __future__ import print_function
 
 import glob
 import keras
+from keras.models import Sequential
+from keras.models import model_from_json
+from keras.models import load_model
 
-from DP_CNN import partition
-from DP_CNN import train_CNN
+import partition
+import train_CNN
 
-def train_teacher(nb_teachers, teacher_id,dirc):
+def train_teacher (nb_teachers, teacher_id):
   """
   This function trains a single teacher model with responds teacher's ID among an ensemble of nb_teachers
   models for the dataset specified.
@@ -19,11 +22,11 @@ def train_teacher(nb_teachers, teacher_id,dirc):
   :return: True if everything went well
   """
   # Load the dataset
-  train_data,train_labels,test_data,test_labels = train_CNN.get_dataset(load=False,dirc)
+  X_train, X_test, y_train, y_test = train_CNN.get_dataset()
   
   # Retrieve subset of data for this teacher
-  data, labels = partition.partition_dataset(train_data,
-                                         train_labels,
+  data, labels = partition.partition_dataset(X_train,
+                                         y_train,
                                          nb_teachers,
                                          teacher_id)
 
@@ -32,27 +35,25 @@ def train_teacher(nb_teachers, teacher_id,dirc):
   # Define teacher checkpoint filename and full path
 
   filename = str(nb_teachers) + '_teachers_' + str(teacher_id) + '.hdf5'
-
-  #train directory from the load picture
-  ckpt_path = train_dir + '/' + str(dataset) + '_' + filename
-
+  filename2 = str(nb_teachers) + '_teachers_' + str(teacher_id) + '.h5'
+ 
   # Perform teacher training need to modify 
  
 
   # Create teacher model
-  model, opt = create_six_conv_layer(train_data.shape[1:])
+  model, opt = train_CNN.create_six_conv_layer(data.shape[1:])
   model.compile(loss='categorical_crossentropy',
               optimizer=opt,
               metrics=['accuracy'])
-  model, hist = training(model, X_train, X_test, y_train, y_test, data_augmentation=True,filename)
+  model, hist = train_CNN.training(model, data, X_test, labels, y_test,filename, data_augmentation=True)
   #modify
-
-  #change to my own code
-  #https://machinelearningmastery.com/save-load-keras-deep-learning-models/ save model to json 
-
-  #change the prediction function  precision = metrics.accuracy(teacher_preds, test_labels)
-  model.save_weights(str(nb_teachers) + '_teachers_' + str(teacher_id) + '.h5')
-
+  model_json = model.to_json()
+  with open("model.json", "w") as json_file:
+    json_file.write(model_json)
+# serialize weights to HDF5
+  model.save_weights(filename2)
+  print("Saved model to disk")
   return True
+
 
 

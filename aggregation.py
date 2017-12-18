@@ -45,25 +45,25 @@ def noisy_max(prob, lap_scale):
   result = np.zeros(int(labels_shape[1]))
 
   # Parse each sample
-  for i in xrange(int(labels_shape[1])):
+  for i in range(int(labels_shape[1])):
     # Count number of votes assigned to each class
     label_counts = np.bincount(labels[:, i], minlength=10)
 
     # Cast in float32 to prepare before addition of Laplacian noise
     label_counts = np.asarray(label_counts, dtype=np.float32)
 
-    # Sample independent Laplacian noise for each class
-    for item in xrange(10):
+    # Sample independent Laplacian noise for each class change the size of class in here 
+    for item in range(1):
       label_counts[item] += np.random.laplace(loc=0.0, scale=float(lap_scale))
 
     # Result is the most frequent label
     result[i] = np.argmax(label_counts)
 
   # Cast labels to np.int32 for compatibility with deep_cnn.py feed dictionaries
-  result = np.asarray(result, dtype=np.int32)
+    result = np.asarray(result, dtype=np.int32)
   
     # Only return labels resulting from noisy aggregation
-    return result
+  return result
 
 
 def aggregation_most_frequent(prob):
@@ -83,7 +83,7 @@ def aggregation_most_frequent(prob):
   result = np.zeros(int(labels_shape[1]))
 
   # Parse each sample
-  for i in xrange(int(labels_shape[1])):
+  for i in range(int(labels_shape[1])):
     # Count number of votes assigned to each class
     label_counts = np.bincount(labels[:, i], minlength=10)
 

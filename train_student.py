@@ -15,9 +15,7 @@ def ensemble_preds(nb_teachers, stdnt_data, num_class):
     """
     Given a dataset, a number of teachers, and some input data, this helper
     function queries each teacher for predictions on the data and returns
-    all predictions in a single array. (That can then be aggregated into
-    one single prediction per input using aggregation.py (cf. function
-    prepare_student_data() below)
+    all predictions in a single array. 
     :param nb_teachers: number of teachers (in the ensemble) to learn from
     :param stdnt_data: unlabeled student training data
     :return: 3d array (teacher id, sample id, probability per class)
@@ -49,16 +47,10 @@ def ensemble_preds(nb_teachers, stdnt_data, num_class):
 def prepare_student_data(test_data,nb_teachers,lap_scale):
     """
     Takes a dataset name and the size of the teacher ensemble and prepares
-    training data for the student model, according to parameters indicated
-    in flags above.
+    training data for the student model
     :param dataset: string corresponding to mnist, cifar10, or svhn
     :param nb_teachers: number of teachers (in the ensemble) to learn from
-    :param save: if set to True, will dump student training labels predicted by
-                             the ensemble of teachers (with Laplacian noise) as npy files.
-                             It also dumps the clean votes for each class (without noise) and
-                             the labels assigned by teachers
-     
-     :Param: stdnt_share: unlabeled student training data decided by user in student dataset.
+    :Param: lap_scale: scale of the Laplacian noise added for privacy
     :return: pairs of (data, labels) to be used for student training and testing
     """
 
@@ -83,14 +75,13 @@ def train_student(nb_teachers):
     This function trains a student using predictions made by an ensemble of
     teachers. The student and teacher models are trained using the same
     neural network architecture.
-    :param dataset: string corresponding to import data
     :param nb_teachers: number of teachers (in the ensemble) to learn from
     :return: True if student training went well
     """
-    # Call helper function to prepare student data using teacher predictions
+    # you need to change the address of get_dataset() manuly 
     X_train, X_test, y_train, y_test = train_CNN.get_dataset()
     
-    print(y_train.shape)
+   # Call helper function to prepare student data using teacher predictions
     y_train= prepare_student_data(X_train, nb_teachers,10)
  
     filename = 'student.hdf5'
@@ -101,7 +92,7 @@ def train_student(nb_teachers):
                             metrics=['accuracy'])
     model, hist = train_CNN.training(model, X_train, X_test, y_train, y_test, filename, data_augmentation=True)
     #modify
-    # Compute final checkpoint name for student (with max number of steps)
+    # Compute final checkpoint name for student 
     model.save_weights('student.h5')
 
 

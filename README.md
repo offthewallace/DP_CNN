@@ -68,4 +68,6 @@ by public datasets B. Return student model.
   3.Modlify the aggregation.py to fit in Keras version
 
 
+## Result of experiment can be found inside of the pdf file.
+
 
